@@ -1,12 +1,14 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 const ToastContext = createContext(null);
+let nextToastId = 0;
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
   const notify = useCallback((message, type = 'info') => {
-    const id = Date.now() + Math.random();
+    nextToastId += 1;
+    const id = nextToastId;
     setToasts((list) => [...list, { id, message, type }]);
     setTimeout(() => setToasts((list) => list.filter((t) => t.id !== id)), 3500);
   }, []);
