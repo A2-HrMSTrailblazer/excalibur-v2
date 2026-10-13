@@ -18,7 +18,7 @@ export default function Orders() {
         <h1 className="text-2xl font-bold mb-6">Orders</h1>
         {loading && <Spinner />}
         {error && <ErrorState error={error} onRetry={reload} />}
-        {orders && orders.length === 0 && (
+        {orders?.length === 0 && (
           <EmptyState title="No orders yet"><Link to="/store" className="btn btn-primary mt-3">Browse the store</Link></EmptyState>
         )}
         <div className="space-y-6">

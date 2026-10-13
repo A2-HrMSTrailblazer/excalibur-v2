@@ -26,7 +26,7 @@ export default function CategoryDrawer({ open, onClose }) {
               </Link>
             </li>
           ))}
-          {categories && categories.length === 0 && <li className="opacity-60">No categories available.</li>}
+          {categories?.length === 0 && <li className="opacity-60">No categories available.</li>}
         </ul>
       </nav>
       <button type="button" className="flex-1 bg-black/60" aria-label="Close categories overlay" onClick={onClose} />

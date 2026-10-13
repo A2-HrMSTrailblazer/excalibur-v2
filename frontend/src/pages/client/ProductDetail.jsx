@@ -5,7 +5,7 @@ import { useApi } from '../../hooks/useApi.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useAddToCart } from '../../hooks/useAddToCart.js';
 import { filterHistory, formatDate, initial, onImageError } from '../../lib/format.js';
-import { ErrorState, Spinner } from '../../components/Feedback.jsx';
+import { Spinner } from '../../components/Feedback.jsx';
 import PriceChart from '../../components/PriceChart.jsx';
 import StarRating from '../../components/StarRating.jsx';
 
@@ -40,7 +40,7 @@ export default function ProductDetail() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-10">
       <section className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-8">
-        <img src={game.image} alt={game.name} onError={onImageError} className="w-full rounded-box shadow-2xl aspect-[3/4] object-cover" />
+        <img src={game.image} alt={game.name} onError={onImageError} className="w-full rounded-box shadow-2xl aspect-3/4 object-cover" />
         <div className="space-y-6">
           <h1 className="text-4xl font-extrabold">{game.name}</h1>
           <div className="grid sm:grid-cols-2 gap-4">

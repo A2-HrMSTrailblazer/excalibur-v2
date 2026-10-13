@@ -100,7 +100,7 @@ export default function Store() {
         </div>
         {loading && <Spinner />}
         {error && <ErrorState error={error} onRetry={reload} />}
-        {data && data.items.length === 0 && (
+        {data?.items.length === 0 && (
           <EmptyState title="No games found">Try a different search or remove some filters.</EmptyState>
         )}
         {data && data.items.length > 0 && (

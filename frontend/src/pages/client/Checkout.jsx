@@ -32,7 +32,7 @@ function useCountdown(running) {
 }
 
 function copy(text, notify) {
-  navigator.clipboard?.writeText(text).then(() => notify(`Copied: ${text}`, 'success'));
+  void navigator.clipboard?.writeText(text).then(() => notify(`Copied: ${text}`, 'success'));
 }
 
 export default function Checkout() {
@@ -64,7 +64,7 @@ export default function Checkout() {
       await api('/checkout', { method: 'POST', body: { paymentMethod: method } });
       await refresh();
       notify('Payment received. Your keys are ready!', 'success');
-      navigate('/orders');
+      void navigate('/orders');
     } catch (err) {
       notify(err.message, 'error');
       setPaying(false);

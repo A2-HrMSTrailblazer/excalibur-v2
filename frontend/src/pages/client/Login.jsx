@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import Logo from '../../components/Logo.jsx';
 
 /** Only allow in-site return paths (avoids open redirects). */
-export const safeReturnTo = (value) => (value && value.startsWith('/') && !value.startsWith('//') ? value : '/');
+export const safeReturnTo = (value) => (value?.startsWith('/') && !value.startsWith('//') ? value : '/');
 
 export default function Login() {
   const { login } = useAuth();
@@ -20,7 +20,7 @@ export default function Login() {
     setError('');
     try {
       const user = await login(form.email.trim(), form.password);
-      navigate(user.role === 'admin' ? '/admin/dashboard' : safeReturnTo(params.get('returnTo')));
+      void navigate(user.role === 'admin' ? '/admin/dashboard' : safeReturnTo(params.get('returnTo')));
     } catch (err) {
       setError(err.status === 401 ? 'Invalid email or password. Please try again.' : err.message);
       setBusy(false);
