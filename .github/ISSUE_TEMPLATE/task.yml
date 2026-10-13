@@ -1,0 +1,22 @@
+name: Task
+description: A piece of work for the re-engineering
+labels: [task]
+body:
+  - type: dropdown
+    id: part
+    attributes:
+      label: Part of the stack
+      options: [UI, Frontend, Backend, Database, Process / tooling, Report]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What needs to be done
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      placeholder: e.g. Store page filters by platform and price, with tests

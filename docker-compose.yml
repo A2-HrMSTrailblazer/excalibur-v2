@@ -1,0 +1,56 @@
+# docker compose up -d                 -> PostgreSQL + the app on http://localhost:3000
+# docker compose --profile sonar up -d -> also SonarQube on http://localhost:9000
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: excalibur_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: excalibur
+      POSTGRES_PASSWORD: excalibur
+      POSTGRES_DB: excalibur
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      # Runs once, on the first start with an empty volume (same idea as the old mysql-init folder).
+      - ./backend/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./backend/db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - ./backend/db/create-test-db.sql:/docker-entrypoint-initdb.d/03-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U excalibur"]
+      interval: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: excalibur_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://excalibur:excalibur@db:5432/excalibur
+      SESSION_SECRET: ${SESSION_SECRET:-change-me-to-a-long-random-string-32+}
+      SESSION_SALT: ${SESSION_SALT:-excalibur-salt16}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/uploads:/app/backend/uploads
+
+  sonarqube:
+    image: sonarqube:community
+    container_name: excalibur_sonarqube
+    profiles: ["sonar"]
+    ports:
+      - "9000:9000"
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_extensions:/opt/sonarqube/extensions
+
+volumes:
+  db_data:
+  sonar_data:
+  sonar_extensions:

@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  backend:
+    name: Backend (Fastify + PostgreSQL)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: excalibur
+          POSTGRES_PASSWORD: excalibur
+          POSTGRES_DB: excalibur_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U excalibur"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://excalibur:excalibur@localhost:5432/excalibur_test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      # Fails the build if statement/branch coverage drops below the thresholds in vitest.config.js
+      - run: npm run coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage/lcov.info
+
+  frontend:
+    name: Frontend (React + Vite)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run coverage
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/lcov.info
+
+  sonarqube:
+    name: SonarQube analysis + quality gate
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    # Runs only when the repo has SONAR_TOKEN and SONAR_HOST_URL secrets (e.g. SonarCloud or a public SonarQube).
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage
+      - uses: actions/download-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage
+      - name: Scan
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-scan-action@v5
+        with:
+          args: -Dsonar.qualitygate.wait=true
+      - name: Skipped
+        if: env.SONAR_TOKEN == ''
+        run: echo "SONAR_TOKEN not set - run the scanner locally (see README)."
