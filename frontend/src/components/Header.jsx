@@ -15,17 +15,17 @@ export default function Header({ onOpenCategories }) {
   const submit = (e) => {
     e.preventDefault();
     const q = search.trim();
-    navigate(q ? `/store?search=${encodeURIComponent(q)}` : '/store');
+    void navigate(q ? `/store?search=${encodeURIComponent(q)}` : '/store');
   };
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    void navigate('/login');
   };
 
   return (
     <header className="bg-secondary sticky top-0 z-40 shadow-lg">
-      <div className="flex items-center gap-4 px-4 lg:px-[10%] h-[70px]">
+      <div className="flex items-center gap-4 px-4 lg:px-[10%] h-17.5">
         <Link to="/" className="shrink-0" aria-label="Excalibur home">
           <Logo />
         </Link>
