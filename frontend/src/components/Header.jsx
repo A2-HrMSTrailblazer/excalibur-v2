@@ -60,7 +60,7 @@ export default function Header({ onOpenCategories }) {
                 <User size={22} />
                 <span className="hidden md:inline">{user.username}</span>
               </button>
-              <ul tabIndex={0} className="dropdown-content menu bg-neutral rounded-box z-50 w-52 p-2 shadow-xl mt-2">
+              <ul className="dropdown-content menu bg-neutral rounded-box z-50 w-52 p-2 shadow-xl mt-2">
                 {user.role === 'admin' && (
                   <li><Link to="/admin/dashboard"><LayoutGrid size={16} /> Admin panel</Link></li>
                 )}

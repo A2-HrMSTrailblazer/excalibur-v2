@@ -52,7 +52,8 @@ export default function Checkout() {
   if (cart.items.length === 0 && !paying) return <Navigate to="/cart" replace />;
 
   const open = () => {
-    setRef(String(Math.floor(100000 + Math.random() * 900000)));
+    const [n] = crypto.getRandomValues(new Uint32Array(1));
+    setRef(String(100000 + (n % 900000)));
     setModalOpen(true);
   };
 
